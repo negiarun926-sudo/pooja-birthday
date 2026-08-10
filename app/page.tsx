@@ -189,12 +189,14 @@ export default function Home() {
                 {[
                   "Bhale hi ab humari baatein pehle jaisi nahi hoti...",
                   "Bhale hi humare beech pehle jaisi conversations nahi rahi...",
-                  "Lekin ek cheez aaj bhi bilkul waisi hi hai — mere dil mein tumhare liye jo feelings hain.",
-                  "Waqt badla, situations badli, baatein kam hui... lekin tumhare liye mera pyaar kabhi kam nahi hua.",
-                  "Aaj bhi tum mere liye utni hi special ho jitni pehle thi.",
-                  "Shayad main har baar keh nahi pata, lekin dil ke kisi kone mein tumhari jagah aaj bhi wahi hai.",
-                  "Main bas chahta hoon ki tum hamesha khush raho, smile karti raho, aur tumhe zindagi mein woh saari khushiyan milein jo tum deserve karti ho.",
-                ].map((text, i) => (
+                  "Lekin ek cheez aaj bhi bilkul waisi hi hai — mere dil mein tere liye jo feelings hain.",
+                  "Waqt badla, situations badli, baatein kam hui... lekin tere liye mera pyaar kabhi kam nahi hua.",
+                  "Aaj bhi tu mere liye utni hi special hai jitni pehle thi.",
+                  "Shayad main av terko preshn nhi kar pata 
+                  lekin dil ke kisi kone mein tumhari jagah aaj bhi wahi hai.",
+                  "Main bas chahta hoon ki tu hamesha khush rahe smile karti rahe, aur tumhe zindagi mein woh saari khushiyan milein jo tu
+                   deserve karti hai.",
+                   ].map((text, i) => (
                   <motion.p key={i} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .5 }} transition={{ duration: .7, delay: i * .08 }}>
                     {text}
                   </motion.p>
