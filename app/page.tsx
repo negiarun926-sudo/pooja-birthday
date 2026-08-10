@@ -1,245 +1,241 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Sparkles, Environment } from "@react-three/drei";
-import * as THREE from "three";
+import { useEffect, useState } from "react";
 
-const UNLOCK_AT = new Date("2026-09-23T10:00:00+05:30").getTime();
-
-function Heart3D() {
-  const group = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (!group.current) return;
-    group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.35) * 0.18;
-    group.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.25) * 0.04;
-    const s = 1 + Math.sin(state.clock.elapsedTime * 2.2) * 0.035;
-    group.current.scale.setScalar(s);
-  });
-
-  return (
-    <group ref={group}>
-      <Float speed={1.2} rotationIntensity={0.35} floatIntensity={0.7}>
-        <mesh position={[-0.28, 0.2, 0]}>
-          <sphereGeometry args={[0.62, 48, 48]} />
-          <meshStandardMaterial color="#ff4f91" emissive="#ff174f" emissiveIntensity={1.4} roughness={0.22} metalness={0.15} />
-        </mesh>
-        <mesh position={[0.28, 0.2, 0]}>
-          <sphereGeometry args={[0.62, 48, 48]} />
-          <meshStandardMaterial color="#ff4f91" emissive="#ff174f" emissiveIntensity={1.4} roughness={0.22} metalness={0.15} />
-        </mesh>
-        <mesh rotation={[0, 0, Math.PI]} position={[0, -0.22, 0]}>
-          <coneGeometry args={[0.82, 1.55, 64]} />
-          <meshStandardMaterial color="#ff4f91" emissive="#ff174f" emissiveIntensity={1.4} roughness={0.22} metalness={0.15} />
-        </mesh>
-      </Float>
-    </group>
-  );
-}
-
-function Background3D() {
-  return (
-    <div className="canvas-bg" aria-hidden="true">
-      <Canvas camera={{ position: [0, 0, 5.2], fov: 42 }} dpr={[1, 1.5]}>
-        <ambientLight intensity={0.35} />
-        <pointLight position={[2, 3, 4]} intensity={25} color="#ff5a9d" />
-        <pointLight position={[-3, -1, 2]} intensity={12} color="#8c5cff" />
-        <Sparkles count={85} scale={[12, 7, 5]} size={1.7} speed={0.35} color="#ffd0e4" />
-        <Heart3D />
-        <Environment preset="night" />
-      </Canvas>
-    </div>
-  );
-}
+const UNLOCK_AT = new Date("2026-09-23T10:00:00+05:30");
 
 function getRemaining() {
-  const diff = Math.max(0, UNLOCK_AT - Date.now());
+  const diff = Math.max(0, UNLOCK_AT.getTime() - Date.now());
   const total = Math.floor(diff / 1000);
+
   return {
     days: Math.floor(total / 86400),
     hours: Math.floor((total % 86400) / 3600),
     minutes: Math.floor((total % 3600) / 60),
     seconds: total % 60,
-    unlocked: diff === 0,
   };
 }
 
+const messages = [
+  "Bhle baat nhi hote per aaj bhi pyar phle jaisa hi hai.",
+  "I love u Pooja.",
+  "Waqt badla, situations badli, baatein kam hui... lekin tere liye mera pyaar kabhi kam nahi hua.",
+  "Aaj bhi tu mere liye utni hi special hai jitni pehle thi.",
+  "Shayad main av terko preshn nhi kar pata lekin dil ke kisi kone mein tumhari jagah aaj bhi wahi hai.",
+  "Main bas chahta hoon ki tu hamesha khush rahe smile karti rahe, aur tumhe zindagi mein woh saari khushiyan milein jo tu deserve karti hai.",
+  "I love u Pooja ❤️",
+];
+
 export default function Home() {
   const [remaining, setRemaining] = useState(getRemaining());
-  const [entered, setEntered] = useState(false);
-  const [audioOn, setAudioOn] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [unlocked, setUnlocked] = useState(
+    Date.now() >= UNLOCK_AT.getTime()
+  );
+  const [started, setStarted] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => setRemaining(getRemaining()), 1000);
+    const timer = setInterval(() => {
+      const now = Date.now();
+
+      if (now >= UNLOCK_AT.getTime()) {
+        setUnlocked(true);
+        setRemaining({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+      } else {
+        setRemaining(getRemaining());
+      }
+    }, 1000);
+
     return () => clearInterval(timer);
   }, []);
 
-  const unlocked = remaining.unlocked;
-  const photos = useMemo(() => ["/images/IMG_4246.png", "/images/IMG_4247.png"], []);
+  useEffect(() => {
+    if (!started) return;
 
-  const startMusic = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    try {
-      audio.volume = 0.45;
-      await audio.play();
-      setAudioOn(true);
-    } catch {
-      setAudioOn(false);
-    }
+    const interval = setInterval(() => {
+      setMessageIndex((current) => {
+        if (current >= messages.length - 1) {
+          return 0;
+        }
+
+        return current + 1;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [started]);
+
+  const openHeart = () => {
+    setStarted(true);
+
+    setTimeout(() => {
+      document
+        .getElementById("love-message")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
   };
 
-  const enter = async () => {
-    setEntered(true);
-    if (unlocked) await startMusic();
-  };
+  if (!unlocked) {
+    return (
+      <main className="locked-page">
+        <div className="heart-background">
+          <span>❤️</span>
+          <span>♡</span>
+          <span>💕</span>
+          <span>♡</span>
+          <span>❤️</span>
+          <span>💗</span>
+          <span>♡</span>
+          <span>❤️</span>
+        </div>
 
-  const toggleMusic = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) await startMusic();
-    else {
-      audio.pause();
-      setAudioOn(false);
-    }
-  };
+        <section className="lock-card">
+          <div className="lock-icon">🔐</div>
+
+          <p className="small-label">
+            A little surprise for
+          </p>
+
+          <h1>Pooja</h1>
+
+          <p className="subtitle">
+            Something special is waiting for you...
+          </p>
+
+          <div className="countdown">
+            <div className="time-box">
+              <strong>{remaining.days}</strong>
+              <span>Days</span>
+            </div>
+
+            <div className="time-box">
+              <strong>{remaining.hours}</strong>
+              <span>Hours</span>
+            </div>
+
+            <div className="time-box">
+              <strong>{remaining.minutes}</strong>
+              <span>Minutes</span>
+            </div>
+
+            <div className="time-box">
+              <strong>{remaining.seconds}</strong>
+              <span>Seconds</span>
+            </div>
+          </div>
+
+          <p className="unlock-text">
+            Unlocks on
+            <br />
+            <b>23 September 2026</b>
+            <br />
+            at <b>10:00 AM</b>
+          </p>
+
+          <div className="heart-line">
+            ♡ ❤️ ♡
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
-    <main>
-      <audio ref={audioRef} src="/music/romantic-song.mp3" loop preload="none" />
-
-      <Background3D />
-
-      <div className="petals" aria-hidden="true">
-        {Array.from({ length: 18 }).map((_, i) => (
-          <span key={i} style={{ left: `${(i * 17) % 100}%`, animationDelay: `${(i % 7) * 1.1}s`, animationDuration: `${8 + (i % 5)}s` }}>♥</span>
-        ))}
+    <main className="birthday-page">
+      <div className="floating-hearts">
+        <span>❤️</span>
+        <span>💗</span>
+        <span>💕</span>
+        <span>❤️</span>
+        <span>💖</span>
+        <span>💗</span>
       </div>
 
       <section className="hero">
-        <div className="glass hero-card">
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
-            <p className="eyebrow">A little secret for you</p>
-            <h1>Pooja<span>...</span></h1>
-            <p className="lead">I made something special for you.</p>
-            <p className="muted">But you&apos;ll have to wait for the right moment ❤️</p>
+        <p className="eyebrow">
+          TODAY IS ALL ABOUT YOU
+        </p>
 
-            <button className="primary" onClick={enter}>
-              {entered ? "The surprise awaits ❤️" : "Enter the Surprise ✨"}
-            </button>
+        <h1>
+          Happy Birthday
+          <br />
+          <span>Pooja ❤️</span>
+        </h1>
 
-            <p className="tiny">23 September 2026 · 10:00 AM IST</p>
-          </motion.div>
+        <p className="hero-text">
+          Today is your special day...
+          <br />
+          and I wanted to make it a little more special.
+        </p>
+
+        <div className="photo-frame">
+          <img
+            src="/images/IMG_4246.png"
+            alt="Pooja"
+          />
         </div>
+
+        <button
+          onClick={openHeart}
+          className="surprise-button"
+        >
+          Open My Heart ❤️
+        </button>
       </section>
 
-      <section className="section">
-        <div className="section-inner">
-          <p className="eyebrow">COUNTDOWN</p>
-          <h2>Something beautiful is waiting for you...</h2>
-          <p className="section-sub">The door opens on 23 September at 10:00 AM.</p>
+      {started && (
+        <section
+          id="love-message"
+          className="message-section"
+        >
+          <div className="music-card">
+            <div className="music-icon">🎵</div>
 
-          <div className="countdown">
-            {[
-              ["DAYS", remaining.days],
-              ["HOURS", remaining.hours],
-              ["MINUTES", remaining.minutes],
-              ["SECONDS", remaining.seconds],
-            ].map(([label, value]) => (
-              <motion.div key={label} className="time-card" animate={{ scale: label === "SECONDS" ? [1, 1.035, 1] : 1 }} transition={{ duration: 1, repeat: Infinity }}>
-                <strong>{String(value).padStart(2, "0")}</strong>
-                <span>{label}</span>
-              </motion.div>
-            ))}
+            <p>
+              A little song for you, Pooja ❤️
+            </p>
+
+            <audio
+              controls
+              autoPlay
+              loop
+              src="/music/birthday-song.mp3"
+            />
           </div>
 
-          <div className={`lock ${unlocked ? "open" : ""}`}>
-            <div className="lock-heart">{unlocked ? "♥" : "🔐"}</div>
-            <h3>{unlocked ? "The surprise is unlocked." : "This surprise is locked for now."}</h3>
-            <p>{unlocked ? "It&apos;s your day, Pooja. ❤️" : "Come back on 23rd September at 10:00 AM ❤️"}</p>
+          <div className="love-message">
+            <p className="message-number">
+              {messageIndex + 1} / {messages.length}
+            </p>
+
+            <h2>
+              {messages[messageIndex]}
+            </h2>
+
+            <div className="second-photo">
+              <img
+                src="/images/IMG_4247.png"
+                alt="Pooja memory"
+              />
+            </div>
+
+            <div className="signature">
+              With love,
+              <br />
+              <span>Arun ❤️</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <AnimatePresence>
-        {unlocked && (
-          <motion.div className="birthday-content" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.4 }}>
-            <section className="section reveal">
-              <div className="section-inner">
-                <p className="eyebrow">THE WAIT IS OVER</p>
-                <motion.h2 initial={{ opacity: 0, scale: .92 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1 }}>
-                  It&apos;s Your Day, Pooja! ❤️
-                </motion.h2>
-                <h1 className="birthday-title">HAPPY BIRTHDAY<br /><span>POOJA ❤️</span></h1>
-                <p className="section-sub">Now... let me tell you something.</p>
-                <button className="primary" onClick={startMusic}>Continue ❤️</button>
-                <button className="music-btn" onClick={toggleMusic}>{audioOn ? "❚❚ Pause music" : "♫ Play our song"}</button>
-                <p className="tiny">Add your own song at <code>public/music/romantic-song.mp3</code>.</p>
-              </div>
-            </section>
-
-            <section className="section message-section">
-              <div className="message glass">
-                <p className="eyebrow">A LETTER FOR YOU</p>
-                <h2>Dear Pooja...</h2>
-                {[
-                  "Bhale hi ab humari baatein pehle jaisi nahi hoti...",
-                  "Bhale hi humare beech pehle jaisi conversations nahi rahi...",
-                  "Lekin ek cheez aaj bhi bilkul waisi hi hai — mere dil mein tere liye jo feelings hain.",
-                  "Waqt badla, situations badli, baatein kam hui... lekin tere liye mera pyaar kabhi kam nahi hua.",
-                  "Aaj bhi tu mere liye utni hi special hai jitni pehle thi.",
-                  "Shayad main av terko preshn nhi kar pata 
-                  lekin dil ke kisi kone mein tumhari jagah aaj bhi wahi hai.",
-                  "Main bas chahta hoon ki tu hamesha khush rahe smile karti rahe, aur tumhe zindagi mein woh saari khushiyan milein jo tu
-                   deserve karti hai.",
-                   ].map((text, i) => (
-                  <motion.p key={i} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .5 }} transition={{ duration: .7, delay: i * .08 }}>
-                    {text}
-                  </motion.p>
-                ))}
-                <motion.p className="love-line" initial={{ opacity: 0, scale: .96 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 1 }}>
-                  I still love you, Pooja. ❤️
-                </motion.p>
-              </div>
-            </section>
-
-            <section className="section">
-              <div className="section-inner">
-                <p className="eyebrow">MEMORIES</p>
-                <h2>A few moments worth keeping...</h2>
-                <div className="gallery">
-                  {photos.map((src, i) => (
-                    <motion.figure key={src} className="photo-card" initial={{ opacity: 0, y: 40, rotate: i ? 4 : -4 }} whileInView={{ opacity: 1, y: 0, rotate: i ? 2 : -2 }} viewport={{ once: true }} transition={{ duration: .9 }}>
-                      <img src={src} alt={`Pooja memory ${i + 1}`} />
-                      <figcaption>{i === 0 ? "That smile... ❤️" : "One of my favourite pictures of you."}</figcaption>
-                    </motion.figure>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section className="section">
-              <div className="wish glass">
-                <p className="eyebrow">ONE LAST THING</p>
-                <h2>Make A Wish ✨</h2>
-                <p>May this new year of your life bring you endless happiness, beautiful memories, peace in your heart, and countless reasons to smile.</p>
-                <p>I hope every dream you have slowly becomes reality.</p>
-                <p>And no matter how much time passes, some feelings simply don&apos;t disappear.</p>
-                <h3>Bhale hi baat pehle jaisi nahi hoti,<br />par aaj bhi tumhare liye mera pyaar pehle jaisa hi hai.</h3>
-                <div className="final-heart">♥</div>
-                <h1>I Love You, Pooja. ❤️</h1>
-                <p className="signature">Always. ❤️</p>
-              </div>
-            </section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <footer>Made with ❤️ for Pooja</footer>
+      <footer>
+        Made with ❤️ for Pooja
+      </footer>
     </main>
   );
 }
