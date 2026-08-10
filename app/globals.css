@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Pacifico&display=swap');
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#08040a;color:#fff;font-family:Inter,system-ui,sans-serif;overflow-x:hidden}
+button{font:inherit}
+main{position:relative;min-height:100vh;background:radial-gradient(circle at 50% 10%,#2a0d20 0,#0b050d 42%,#050306 100%)}
+.canvas-bg{position:fixed;inset:0;z-index:0;opacity:.85;pointer-events:none}
+.petals{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.petals span{position:absolute;top:-10%;font-size:12px;color:#ff76ad;opacity:.65;animation:fall linear infinite;filter:drop-shadow(0 0 8px #ff3d8d)}
+@keyframes fall{0%{transform:translate3d(0,-10vh,0) rotate(0deg)}100%{transform:translate3d(60px,115vh,0) rotate(360deg)}}
+.hero,.section{position:relative;z-index:2}
+.hero{min-height:100svh;display:grid;place-items:center;padding:28px}
+.glass{background:rgba(20,8,20,.52);border:1px solid rgba(255,160,204,.2);box-shadow:0 25px 80px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.05);backdrop-filter:blur(18px)}
+.hero-card{width:min(720px,100%);text-align:center;border-radius:32px;padding:54px 28px}
+.eyebrow{letter-spacing:.25em;text-transform:uppercase;font-size:11px;color:#ffabc9;margin:0 0 14px}
+h1,h2,h3{font-family:"Cormorant Garamond",serif}
+.hero h1{font-size:clamp(68px,16vw,140px);line-height:.8;margin:12px 0 30px;font-weight:500;text-shadow:0 0 30px rgba(255,70,140,.5)}
+.hero h1 span{color:#ff77ac}
+.lead{font-family:"Cormorant Garamond",serif;font-size:30px;margin:0 0 10px}
+.muted,.section-sub{color:#cbb8c5;line-height:1.7}
+.primary{border:1px solid rgba(255,150,195,.5);background:linear-gradient(135deg,#ff4f91,#9f3f91);color:#fff;border-radius:999px;padding:14px 24px;cursor:pointer;box-shadow:0 12px 35px rgba(255,60,145,.22);transition:.25s}
+.primary:hover{transform:translateY(-2px);box-shadow:0 16px 45px rgba(255,60,145,.35)}
+.tiny{font-size:11px;color:#8f7b89;margin-top:16px}
+.section{padding:110px 22px}
+.section-inner{width:min(980px,100%);margin:auto;text-align:center}
+.section h2{font-size:clamp(38px,7vw,68px);font-weight:500;margin:0 0 12px}
+.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:42px 0}
+.time-card{padding:20px 8px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid rgba(255,180,215,.16)}
+.time-card strong{display:block;font-family:"Cormorant Garamond",serif;font-size:clamp(34px,7vw,62px);font-weight:500;color:#ff91b8}
+.time-card span{font-size:9px;letter-spacing:.2em;color:#9e8997}
+.lock{margin:20px auto 0;max-width:560px;padding:35px;border-radius:30px;background:rgba(255,255,255,.035);border:1px solid rgba(255,180,215,.14)}
+.lock-heart{font-size:62px;filter:drop-shadow(0 0 22px rgba(255,70,140,.7));animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.lock h3{font-size:28px;margin:12px 0 8px}
+.lock p{color:#b9a5b1}
+.birthday-content{position:relative;z-index:3}
+.birthday-title{font-family:"Cormorant Garamond",serif;font-size:clamp(50px,12vw,110px);line-height:.82;font-weight:500;margin:38px 0}
+.birthday-title span{font-family:Pacifico,cursive;font-size:.7em;color:#ff83b2;text-shadow:0 0 25px rgba(255,60,140,.45)}
+.music-btn{margin:14px 8px 0;border:1px solid rgba(255,180,215,.2);background:rgba(255,255,255,.05);color:#f7dce9;border-radius:999px;padding:12px 18px;cursor:pointer}
+.message-section{padding-top:70px}
+.message{width:min(820px,100%);margin:auto;border-radius:30px;padding:42px 28px;text-align:center}
+.message h2{font-size:58px;margin:0 0 30px}
+.message p{font-family:"Cormorant Garamond",serif;font-size:24px;line-height:1.45;color:#e6d5df;margin:20px auto;max-width:690px}
+.message .love-line{font-family:Pacifico,cursive;color:#ff86b5;font-size:30px;margin-top:38px}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:40px}
+.photo-card{margin:0;padding:12px 12px 22px;background:#f4e7df;color:#24151c;box-shadow:0 20px 50px rgba(0,0,0,.35);border-radius:5px}
+.photo-card img{width:100%;aspect-ratio:4/5;display:block;object-fit:cover}
+.photo-card figcaption{font-family:"Cormorant Garamond",serif;font-size:21px;margin-top:12px}
+.wish{width:min(820px,100%);margin:auto;text-align:center;border-radius:34px;padding:60px 28px}
+.wish h2{font-size:62px;margin:0 0 25px}
+.wish p{font-family:"Cormorant Garamond",serif;font-size:24px;line-height:1.45;color:#e3d1dc}
+.wish h3{font-size:30px;font-weight:500;line-height:1.35;color:#ffb1cc}
+.final-heart{font-size:90px;color:#ff4f91;filter:drop-shadow(0 0 30px #ff3b88);animation:pulse 1.4s ease-in-out infinite;margin:25px 0}
+.wish h1{font-family:Pacifico,cursive;font-size:clamp(32px,7vw,58px);color:#ff8eb9}
+.signature{font-family:Pacifico,cursive!important;color:#ff9abd!important;font-size:28px!important}
+footer{position:relative;z-index:3;text-align:center;padding:35px;color:#75636e;font-size:12px}
+code{font-size:10px;color:#ff9abd}
+@media(max-width:650px){
+ .hero-card{padding:44px 20px;border-radius:26px}
+ .countdown{grid-template-columns:repeat(2,1fr)}
+ .section{padding:82px 16px}
+ .gallery{grid-template-columns:1fr;gap:20px}
+ .message,.wish{padding:34px 20px}
+ .message p,.wish p{font-size:21px}
+ .message h2,.wish h2{font-size:48px}
+}
