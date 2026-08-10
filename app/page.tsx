@@ -7,7 +7,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Sparkles, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-const UNLOCK_AT = new Date("2026-09-23T10:00:00+05:30").getTime();
+const UNLOCK_AT = new Date("2026-08-01T10:00:00+05:30");
 
 function Heart3D() {
   const group = useRef<THREE.Group>(null);
