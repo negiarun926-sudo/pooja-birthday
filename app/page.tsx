@@ -7,7 +7,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Sparkles, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-const UNLOCK_AT = new Date("2026-08-01T10:00:00+05:30");
+const UNLOCK_AT = new Date("2026-09-23T10:00:00+05:30").getTime();
 
 function Heart3D() {
   const group = useRef<THREE.Group>(null);
@@ -56,7 +56,7 @@ function Background3D() {
 }
 
 function getRemaining() {
-  const diff = Math.max(0, UNLOCK_AT.getTime() - Date.now());
+  const diff = Math.max(0, UNLOCK_AT - Date.now());
   const total = Math.floor(diff / 1000);
   return {
     days: Math.floor(total / 86400),
@@ -79,8 +79,7 @@ export default function Home() {
   }, []);
 
   const unlocked = remaining.unlocked;
-  const photos = useMemo(() => [/images/IMG_4246.png
-/images/IMG_4247.png
+  const photos = useMemo(() => ["/images/pooja-1.jpg", "/images/pooja-2.jpg"], []);
 
   const startMusic = async () => {
     const audio = audioRef.current;
@@ -190,11 +189,11 @@ export default function Home() {
                 {[
                   "Bhale hi ab humari baatein pehle jaisi nahi hoti...",
                   "Bhale hi humare beech pehle jaisi conversations nahi rahi...",
-                  "Lekin ek cheez aaj bhi bilkul waisi hi hai — mere dil mein tere liye jo feelings hain.",
-                  "Waqt badla, situations badli, baatein kam hui... lekin tere liye mera pyaar kabhi kam nahi hua.",
-                  "Aaj bhi tu mere liye utni hi special ho jitni pehle thi.",
-                  "Shayad main av jada bol nahi pata pareshn nhi kar pata lekin dil  mein tere hi jagah aaj bhi wahi hai.",
-                  "Main bas chahta hoon ki tu hamesha khush rahe, smile karti rahe aur tere zindagi mein woh saari khushiyan milein jo tu deserve karti ho.",
+                  "Lekin ek cheez aaj bhi bilkul waisi hi hai — mere dil mein tumhare liye jo feelings hain.",
+                  "Waqt badla, situations badli, baatein kam hui... lekin tumhare liye mera pyaar kabhi kam nahi hua.",
+                  "Aaj bhi tum mere liye utni hi special ho jitni pehle thi.",
+                  "Shayad main har baar keh nahi pata, lekin dil ke kisi kone mein tumhari jagah aaj bhi wahi hai.",
+                  "Main bas chahta hoon ki tum hamesha khush raho, smile karti raho, aur tumhe zindagi mein woh saari khushiyan milein jo tum deserve karti ho.",
                 ].map((text, i) => (
                   <motion.p key={i} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .5 }} transition={{ duration: .7, delay: i * .08 }}>
                     {text}
