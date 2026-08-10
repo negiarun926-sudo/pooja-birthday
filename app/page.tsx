@@ -56,7 +56,7 @@ function Background3D() {
 }
 
 function getRemaining() {
-  const diff = Math.max(0, UNLOCK_AT - Date.now());
+  const diff = Math.max(0, UNLOCK_AT.getTime() - Date.now());
   const total = Math.floor(diff / 1000);
   return {
     days: Math.floor(total / 86400),
