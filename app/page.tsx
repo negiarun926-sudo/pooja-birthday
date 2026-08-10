@@ -79,7 +79,8 @@ export default function Home() {
   }, []);
 
   const unlocked = remaining.unlocked;
-  const photos = useMemo(() => ["/images/pooja-1.jpg", "/images/pooja-2.jpg"], []);
+  const photos = useMemo(() => [/images/IMG_4246.png
+/images/IMG_4247.png
 
   const startMusic = async () => {
     const audio = audioRef.current;
