@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const UNLOCK_AT = new Date("2026-09-23T10:00:00+05:30");
 
 const messages = [
   "Bhle baat nhi hote per aaj bhi pyar phle jaisa hi hai.",
@@ -27,10 +29,66 @@ const hearts = [
   "💗",
 ];
 
+function getRemaining() {
+  const difference = Math.max(
+    0,
+    UNLOCK_AT.getTime() - Date.now()
+  );
+
+  const totalSeconds = Math.floor(difference / 1000);
+
+  return {
+    days: Math.floor(totalSeconds / 86400),
+    hours: Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  };
+}
+
 export default function Home() {
+  const [remaining, setRemaining] = useState(getRemaining);
+  const [unlocked, setUnlocked] = useState(
+    () => Date.now() >= UNLOCK_AT.getTime()
+  );
+
   const [started, setStarted] = useState(false);
   const [messageIndex, setMessageIndex] = useState(0);
   const [musicPlaying, setMusicPlaying] = useState(false);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // =========================
+  // COUNTDOWN
+  // =========================
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+
+      if (now >= UNLOCK_AT.getTime()) {
+        setUnlocked(true);
+
+        setRemaining({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+
+        window.clearInterval(timer);
+        return;
+      }
+
+      setRemaining(getRemaining());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  // =========================
+  // MESSAGE ROTATION
+  // 8 SECONDS
+  // =========================
 
   useEffect(() => {
     if (!started) return;
@@ -39,13 +97,29 @@ export default function Home() {
       setMessageIndex(
         (current) => (current + 1) % messages.length
       );
-    }, 5000);
+    }, 8000);
 
     return () => window.clearInterval(timer);
   }, [started]);
 
-  const openHeart = () => {
+  // =========================
+  // OPEN HEART
+  // =========================
+
+  const openHeart = async () => {
     setStarted(true);
+
+    try {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+
+        await audioRef.current.play();
+
+        setMusicPlaying(true);
+      }
+    } catch (error) {
+      console.log("Audio playback failed:", error);
+    }
 
     window.setTimeout(() => {
       document
@@ -57,15 +131,129 @@ export default function Home() {
     }, 250);
   };
 
+  // =========================
+  // LOCK SCREEN
+  // =========================
+
+  if (!unlocked) {
+    return (
+      <main className="locked-page">
+
+        <div className="ambient-glow glow-one" />
+        <div className="ambient-glow glow-two" />
+
+        <div
+          className="heart-background"
+          aria-hidden="true"
+        >
+          {hearts.map((heart, index) => (
+            <span
+              key={index}
+              style={{
+                left: `${index * 9}%`,
+                animationDelay: `${index * -1.4}s`,
+                animationDuration: `${8 + (index % 4) * 2}s`,
+              }}
+            >
+              {heart}
+            </span>
+          ))}
+        </div>
+
+        <section className="lock-card">
+
+          <div className="lock-icon">
+            🔐
+          </div>
+
+          <p className="small-label">
+            A little surprise for
+          </p>
+
+          <h1>
+            Pooja
+          </h1>
+
+          <p className="subtitle">
+            Something special is waiting for you...
+          </p>
+
+          <div className="countdown">
+
+            <div className="time-box">
+              <strong>
+                {remaining.days}
+              </strong>
+              <span>
+                Days
+              </span>
+            </div>
+
+            <div className="time-box">
+              <strong>
+                {remaining.hours}
+              </strong>
+              <span>
+                Hours
+              </span>
+            </div>
+
+            <div className="time-box">
+              <strong>
+                {remaining.minutes}
+              </strong>
+              <span>
+                Minutes
+              </span>
+            </div>
+
+            <div className="time-box">
+              <strong>
+                {remaining.seconds}
+              </strong>
+              <span>
+                Seconds
+              </span>
+            </div>
+
+          </div>
+
+          <p className="unlock-text">
+            Unlocks on
+            <br />
+
+            <b>
+              23 September 2026
+            </b>
+
+            <br />
+
+            at{" "}
+
+            <b>
+              10:00 AM
+            </b>
+          </p>
+
+          <div className="heart-line">
+            ♡ ❤️ ♡
+          </div>
+
+        </section>
+
+      </main>
+    );
+  }
+
+  // =========================
+  // BIRTHDAY PAGE
+  // =========================
+
   return (
     <main className="birthday-page">
 
-      {/* BACKGROUND GLOW */}
-
       <div className="ambient-glow glow-one" />
       <div className="ambient-glow glow-two" />
-
-      {/* FLOATING HEARTS */}
 
       <div
         className="floating-hearts"
@@ -88,6 +276,7 @@ export default function Home() {
       {/* HERO */}
 
       <section className="hero">
+
         <div className="hero-inner">
 
           <p className="eyebrow">
@@ -97,7 +286,10 @@ export default function Home() {
           <h1 className="birthday-title">
             Happy Birthday
             <br />
-            <span>Pooja ❤️</span>
+
+            <span>
+              Pooja ❤️
+            </span>
           </h1>
 
           <p className="hero-text">
@@ -106,26 +298,29 @@ export default function Home() {
             and I wanted to make it a little more special.
           </p>
 
-          {/* PHOTO */}
-
           <div className="photo-frame">
+
             <div className="photo-glow" />
 
             <img
               src="/images/IMG_4246.png"
               alt="Pooja"
             />
-          </div>
 
-          {/* BUTTON */}
+          </div>
 
           <button
             type="button"
             className="surprise-button"
             onClick={openHeart}
           >
-            <span>Open My Heart</span>
-            <span>❤️</span>
+            <span>
+              Open My Heart
+            </span>
+
+            <span>
+              ❤️
+            </span>
           </button>
 
           <p className="scroll-hint">
@@ -133,6 +328,7 @@ export default function Home() {
           </p>
 
         </div>
+
       </section>
 
       {/* MESSAGE SECTION */}
@@ -154,6 +350,7 @@ export default function Home() {
               </div>
 
               <div>
+
                 <p className="music-label">
                   A little song for you
                 </p>
@@ -161,17 +358,23 @@ export default function Home() {
                 <h3>
                   Pooja ❤️
                 </h3>
+
               </div>
 
             </div>
 
             <audio
+              ref={audioRef}
               controls
-              autoPlay
               loop
-              src="/music/birthday-song.mp3"
-              onPlay={() => setMusicPlaying(true)}
-              onPause={() => setMusicPlaying(false)}
+              preload="auto"
+              src="/music/birthday-song.mp3.mp3"
+              onPlay={() =>
+                setMusicPlaying(true)
+              }
+              onPause={() =>
+                setMusicPlaying(false)
+              }
             />
 
             {musicPlaying && (
@@ -221,8 +424,6 @@ export default function Home() {
 
             </div>
 
-            {/* MESSAGE DOTS */}
-
             <div className="message-dots">
 
               {messages.map((_, index) => (
@@ -238,20 +439,19 @@ export default function Home() {
 
             </div>
 
-            {/* SIGNATURE */}
-
             <div className="signature">
               With love,
               <br />
-              <span>Arun ❤️</span>
+
+              <span>
+                Arun ❤️
+              </span>
             </div>
 
           </div>
 
         </section>
       )}
-
-      {/* FOOTER */}
 
       <footer>
         Made with ❤️ for Pooja
